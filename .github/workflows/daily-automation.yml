@@ -1,0 +1,25 @@
+name: Daily WoW Leaderboard Automation
+
+on:
+  schedule:
+    # Run daily at 1:00 AM UTC (adjust timezone as needed)
+    - cron: '0 1 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  trigger-automation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render One-Off Job
+        run: |
+          echo "🚀 Triggering daily automation..."
+          curl -X POST "https://api.render.com/v1/services/srv-d21n8j6mcj7s73epb570/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"startCommand": "npm run one-off"}' \
+            -w "\nHTTP Status: %{http_code}\n"
+          
+          echo "✅ Automation triggered successfully!"
+        
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }} 
